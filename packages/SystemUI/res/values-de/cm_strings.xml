@@ -167,4 +167,29 @@
   <string name="accessibility_lock_task">Verhindern, dass <xliff:g id="task">%1$s </xliff:g> beendet wird</string>
   <!-- Content description for Accessibility on locked tasks in recents -->
   <string name="accessibility_unlock_task">Zulassen, dass <xliff:g id="task">%1$s </xliff:g> beendet wird</string>
+  <!-- LiveDisplay strings -->
+  <string name="live_display_auto">Automatisch</string>
+  <string name="live_display_auto_summary">Farbtemperatur des Bildschirms nach Sonnenaufgang und Sonnenuntergang automatisch anpassen</string>
+  <string name="live_display_off">Aus</string>
+  <string name="live_display_off_summary">Alle Anpassungen deaktivieren</string>
+  <string name="live_display_day">Tag</string>
+  <string name="live_display_day_summary">Nur Tag-Modus verwenden</string>
+  <string name="live_display_night">Nacht</string>
+  <string name="live_display_night_summary">Nur Nacht-Modus verwenden</string>
+  <string name="live_display_outdoor">Outdoor (helle Sonne)</string>
+  <string name="live_display_outdoor_summary">Nur Outdoor-Einstellungen verwenden</string>
+  <string name="live_display_hint">LiveDisplay kann gegen eine Überanstrengung der Augen und beim Schlafen in der Nacht helfen. Klicken Sie hier, um es auszuprobieren!</string>
+  <string name="accessibility_quick_settings_live_display_off">LiveDisplay aus.</string>
+  <string name="accessibility_quick_settings_live_display_auto">LiveDisplay: Automatisch.</string>
+  <string name="accessibility_quick_settings_live_display_day">LiveDisplay: Tag-Modus.</string>
+  <string name="accessibility_quick_settings_live_display_night">LiveDisplay: Nacht-Modus.</string>
+  <string name="accessibility_quick_settings_live_display_outdoor">LiveDisplay: Outdoor-Modus.</string>
+  <string name="accessibility_quick_settings_live_display_changed_off">LiveDisplay ausgeschaltet.</string>
+  <string name="accessibility_quick_settings_live_display_changed_auto">LiveDisplay auf Auto-Modus geändert.</string>
+  <string name="accessibility_quick_settings_live_display_changed_day">LiveDisplay auf Tag-Modus geändert.</string>
+  <string name="accessibility_quick_settings_live_display_changed_night">LiveDisplay auf Nacht-Modus geändert.</string>
+  <string name="accessibility_quick_settings_live_display_changed_outdoor">LiveDisplay auf Außen-Modus geändert.</string>
+  <!-- Indication on the keyguard that is shown when the device is charging with a dash charger. Should match keyguard_plugged_in_dash_charging [CHAR LIMIT=40]-->
+  <string name="keyguard_indication_dash_charging_time">Dash Charging (voll in <xliff:g id="charging_time_left" Beispiel="4 Stunden und 2 Minuten">%s</xliff:g>)</string>
+  <string name="keyguard_plugged_in_dash_charging">Dash Charging</string>
 </resources>
