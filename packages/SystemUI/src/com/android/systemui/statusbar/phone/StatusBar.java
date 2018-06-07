@@ -3377,7 +3377,35 @@ public class StatusBar extends SystemUI implements DemoMode,
         return false;
     }
 
-    @Nullable
+    public boolean isCurrentRoundedSameAsFw() {
+         Resources res = null;
+         try {
+             res = mContext.getPackageManager().getResourcesForApplication("com.android.systemui");
+         } catch (NameNotFoundException e) {
+             e.printStackTrace();
+             // If we can't get resources, return true so that updateTheme doesn't attempt to
+             // set corner values
+             return true;
+         }
+
+         // Resource IDs for framework properties
+         int resourceIdRadius = res.getIdentifier("com.android.systemui:dimen/rounded_corner_fuckedup_radius", null, null);
+         int resourceIdPadding = res.getIdentifier("com.android.systemui:dimen/rounded_corner_content_padding", null, null);
+
+         // Values on framework resources
+         int cornerRadiusRes = res.getDimensionPixelSize(resourceIdRadius);
+         int contentPaddingRes = res.getDimensionPixelSize(resourceIdPadding);
+
+         // Values in Settings DBs
+         int cornerRadius = Settings.Secure.getInt(mContext.getContentResolver(),
+                 Settings.Secure.SYSUI_ROUNDED_SIZE, cornerRadiusRes);
+         int contentPadding = Settings.Secure.getInt(mContext.getContentResolver(),
+                 Settings.Secure.SYSUI_ROUNDED_CONTENT_PADDING, contentPaddingRes);
+
+         return (cornerRadiusRes == cornerRadius) && (contentPaddingRes == contentPadding);
+     }
+
+   @Nullable
     public View getAmbientIndicationContainer() {
         return mAmbientIndicationContainer;
     }
@@ -5602,6 +5630,29 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
+    private void updateRoundedCorner(){
+        boolean sysuiRoundedFwvals = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                     Settings.Secure.SYSUI_ROUNDED_FWVALS, 1, mCurrentUserId) == 1;
+         if (sysuiRoundedFwvals && !isCurrentRoundedSameAsFw()) {
+ 
+             Resources res = null;
+             try {
+                 res = mContext.getPackageManager().getResourcesForApplication("com.android.systemui");
+             } catch (NameNotFoundException e) {
+                 e.printStackTrace();
+             }
+ 
+             if (res != null) {
+                 int resourceIdRadius = res.getIdentifier("com.android.systemui:dimen/rounded_corner_fuckedup_radius", null, null);
+                 Settings.Secure.putInt(mContext.getContentResolver(),
+                     Settings.Secure.SYSUI_ROUNDED_SIZE, res.getDimensionPixelSize(resourceIdRadius));
+                 int resourceIdPadding = res.getIdentifier("com.android.systemui:dimen/rounded_corner_content_padding", null, null);
+                 Settings.Secure.putInt(mContext.getContentResolver(),
+                     Settings.Secure.SYSUI_ROUNDED_CONTENT_PADDING, res.getDimensionPixelSize(resourceIdPadding));
+             }
+         }
+    }
+
     private void updateDozingState() {
         Trace.traceCounter(Trace.TRACE_TAG_APP, "dozing", mDozing ? 1 : 0);
         Trace.beginSection("StatusBar#updateDozingState");
@@ -6854,6 +6905,21 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_FOOTER_WARNINGS),
                     false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HIDE_LOCKSCREEN_ALARM),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HIDE_LOCKSCREEN_CLOCK),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HIDE_LOCKSCREEN_DATE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_CLOCK_SELECTION),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_DATE_SELECTION),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG),
                     false, this, UserHandle.USER_ALL);
@@ -6944,6 +7010,10 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_TICKER_ANIMATION_MODE),
                     false, this, UserHandle.USER_ALL);
+	    mContext.getContentResolver().registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.SYSUI_ROUNDED_FWVALS),
+                    false, this, UserHandle.USER_ALL);
+	    update();
         }
 
         @Override
@@ -7029,7 +7099,13 @@ public class StatusBar extends SystemUI implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_TICKER_ANIMATION_MODE))) {
                 updateTickerAnimation();
-            }
+	    } else if (uri.equals(Settings.System.getUriFor(Settings.System.HIDE_LOCKSCREEN_ALARM)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.HIDE_LOCKSCREEN_CLOCK)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.HIDE_LOCKSCREEN_DATE)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_CLOCK_SELECTION)) ||
+                    uri.equals(Settings.System.getUriFor(Settings.System.LOCKSCREEN_DATE_SELECTION))) {
+                updateKeyguardStatusSettings();
+	    }
         }
 
         public void update() {
@@ -7050,7 +7126,13 @@ public class StatusBar extends SystemUI implements DemoMode,
             updateBatterySettings();
             updateClockStyle();
             updateTickerAnimation();
+	    updateKeyguardStatusSettings();
+	    updateRoundedCorner(); 
         }
+    }
+
+    private void updateKeyguardStatusSettings() {
+        mNotificationPanel.updateKeyguardStatusSettings();
     }
 
     public void updateBatterySettings() {
