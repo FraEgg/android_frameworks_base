@@ -99,7 +99,7 @@ public class ChooserActivity extends ResolverActivity {
 
     private static final boolean DEBUG = false;
 
-    private static final int QUERY_TARGET_SERVICE_LIMIT = 5;
+    private static final int QUERY_TARGET_SERVICE_LIMIT = 3;
     private static final int WATCHDOG_TIMEOUT_MILLIS = 2000;
 
     private Bundle mReplacementExtras;
@@ -197,9 +197,7 @@ public class ChooserActivity extends ResolverActivity {
                 if (!(targetsParcelable[i] instanceof Intent)) {
                     Log.w(TAG, "EXTRA_ALTERNATE_INTENTS array entry #" + i + " is not an Intent: "
                             + targetsParcelable[i]);
-                    finish();
-                    super.onCreate(null);
-                    return;
+                    continue;
                 }
                 final Intent additionalTarget = (Intent) targetsParcelable[i];
                 if (i == 0 && target == null) {
@@ -226,9 +224,7 @@ public class ChooserActivity extends ResolverActivity {
             for (int i=0; i<pa.length; i++) {
                 if (!(pa[i] instanceof Intent)) {
                     Log.w(TAG, "Initial intent #" + i + " not an Intent: " + pa[i]);
-                    finish();
-                    super.onCreate(null);
-                    return;
+                    continue;
                 }
                 final Intent in = (Intent) pa[i];
                 modifyTargetIntent(in);
@@ -927,8 +923,8 @@ public class ChooserActivity extends ResolverActivity {
         public static final int TARGET_SERVICE = 1;
         public static final int TARGET_STANDARD = 2;
 
-        private static final int MAX_SERVICE_TARGETS = 8;
-        private static final int MAX_TARGETS_PER_SERVICE = 4;
+        private static final int MAX_SERVICE_TARGETS = 4;
+        private static final int MAX_TARGETS_PER_SERVICE = 2;
 
         private final List<ChooserTargetInfo> mServiceTargets = new ArrayList<>();
         private final List<TargetInfo> mCallerTargets = new ArrayList<>();
